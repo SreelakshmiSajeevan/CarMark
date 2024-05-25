@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../controller/razor_credentials.dart';
+
 class PaymentPage extends StatefulWidget {
   final String orderId;
   final String houseNo;
@@ -11,6 +13,7 @@ class PaymentPage extends StatefulWidget {
   final String state;
   final String pinCode;
   final double totalAmount;
+  final String userId; // Added userId field
 
   const PaymentPage({
     Key? key,
@@ -21,7 +24,9 @@ class PaymentPage extends StatefulWidget {
     required this.state,
     required this.pinCode,
     required this.totalAmount,
+    required this.userId, // Added userId parameter
   }) : super(key: key);
+
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
@@ -30,6 +35,24 @@ class _PaymentPageState extends State<PaymentPage> {
   late Razorpay _razorpay;
   TextEditingController amtController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? userEmail;
+  String? userPhone;
+
+  Future<void> fetchUserDetails() async {
+    try {
+      // Query Firestore for user details using userId
+      DocumentSnapshot userSnapshot =
+      await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
+
+      // Extract email and phone number from the user document
+      setState(() {
+        userEmail = userSnapshot['email'];
+        userPhone = userSnapshot['phoneNumber'];
+      });
+    } catch (e) {
+      debugPrint('Error fetching user details: $e');
+    }
+  }
 
   @override
   void initState() {
@@ -38,6 +61,8 @@ class _PaymentPageState extends State<PaymentPage> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
+    fetchUserDetails();
   }
 
   @override
@@ -46,16 +71,22 @@ class _PaymentPageState extends State<PaymentPage> {
     super.dispose();
   }
 
-  void openCheckOut(int amount) async {
+  void openCheckOut() async {
+    const double usdToInrRate = 75.0; // Replace with actual exchange rate or API call
+
+    // Convert totalAmount from USD to INR
+    int amountInPaise = (widget.totalAmount * usdToInrRate * 100).toInt(); // Amount in paise
+    double twentyPercent = amountInPaise *20/100;
     var options = {
       'key': RazorPayCredentials.keyId,
-      'amount': amount,
-      'name': 'Vineeth Venu',
+      'amount': amountInPaise, // Amount in paise
+      'currency': 'INR',
+      'name': 'Jim Mathew',
       'description': 'Description for order',
       'timeout': 60,
       'prefill': {
-        'contact': '9400377390',
-        'email': 'vineeth.venu.mini@gmail.com'
+        'contact': userPhone ?? '', // Use userPhone fetched from Firestore
+        'email': userEmail ?? '', // Use userEmail fetched from Firestore
       },
       'external': {
         'wallets': ['paytm']
@@ -103,23 +134,11 @@ class _PaymentPageState extends State<PaymentPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: amtController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the amount to be paid';
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Enter Amount'),
-              ),
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    int amount = int.tryParse(amtController.text) ?? 0;
-                    openCheckOut(amount);
+                    openCheckOut();
                   }
                 },
                 child: Text('Pay Now'),

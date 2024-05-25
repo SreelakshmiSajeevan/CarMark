@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -140,6 +141,7 @@ class _AddressPageState extends State<AddressPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => PaymentPage(
+            userId: FirebaseAuth.instance.currentUser!.uid,
             orderId: widget.orderId!,
             houseNo: housenoController.text,
             roadName: roadnameController.text,
