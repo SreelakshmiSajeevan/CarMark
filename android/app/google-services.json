@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "728675062371",
+    "project_id": "carmark-498fa",
+    "storage_bucket": "carmark-498fa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728675062371:android:9743b04078ad0efd80de56",
+        "android_client_info": {
+          "package_name": "com.carmark.carmark"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728675062371-98jvr83oa54tl52o0nsr8d0k6mrkjieh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carmark.carmark",
+            "certificate_hash": "b0ea41f5e6874d7854fab0c469abb4c67293c500"
+          }
+        },
+        {
+          "client_id": "728675062371-m6km5rdar6rb3g2ucje6odvsum69mnp7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe3bMdKAh4X5zF8FxkE83IikeqbZ9-P-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728675062371-m6km5rdar6rb3g2ucje6odvsum69mnp7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "728675062371-gr57q6auamridv7tnqtrlctm1vdra0ak.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.carmark.carmark"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
